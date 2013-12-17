@@ -23,18 +23,20 @@ namespace BC {
 			#@TODO: modify this hook
 			add_action( 'wp_loaded', 'BoostMisc::query_ads_owned_by_user' );
 
-			add_action( 'awpcp_register_settings','BoostSettingsPanel::register_boost_settings' );
-			add_action( 'awpcp_register_settings','BoostSettingsPanel::register_order_by_settings' );
+			add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_boost_settings' );
+			add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_order_by_settings' );
 
 			#Hooks
 			register_activation_hook( __FILE__, array( $this, 'activation' ) );
 			#Filters
+			add_filter( 'the_content', 'BoostEditAd::remove_edit_ad_shortcode' , 6);
+
 			########TESTS########
-			add_action( 'init', array( $this, 'tester' ) );
+			#add_action( 'plugins_loaded','BoostEditAd::remove_edit_ad_shortcode' );
 			########TESTS########
 		}
-		
-		public function tester() {
+
+		public function tester( ) {
 		}
 
 		public function initializer() {
@@ -46,14 +48,21 @@ namespace BC {
 				define( 'SD_BOOST_URL', plugin_dir_url( __FILE__ ) );
 				define( 'SD_BOOST_NAME', plugin_basename(  __FILE__ ) );
 				#Requires
+
+				require_once SD_BOOST_PATH . 'lib/classes/class.awpcpeditad.php';
 				require_once SD_BOOST_PATH . 'lib/classes/class.boost-settings-panel.php';
+				require_once SD_BOOST_PATH . 'lib/classes/class.awpcpui-process.php';
+
 				require_once SD_BOOST_PATH . 'lib/misc.php';
 
 				#Shortcodes
-				add_shortcode( 'AWPCPCLASSIFIEDSUIBOOSTED', 'BoostProcess::boost_shortcode' );
+				add_shortcode( 'BOOSTEDAWPCPCLASSIFIEDSUI', 'BoostProcess::boost_shortcode' );
+				add_shortcode( 'BOOSTEDAWPCPEDITAD', 'BoostEditAd::awpcpui_editformscreen' );
+
 			}
 		}
 
+		#On activation we want to create a table on the AWPCP _awpcp_ads table this table will keep track of the time the ad was last boosted.
 		public function activation() {
 			global $wpdb;
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );

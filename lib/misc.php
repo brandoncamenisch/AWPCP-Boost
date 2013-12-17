@@ -18,8 +18,9 @@ class BoostMisc {
 			FROM " . AWPCP_TABLE_ADS . "
 			WHERE user_id = '$id'"
 		);
+		#var_dump($userads);
 		return $userads;
-		#send to json
+		#@TODO: send to json
 	}
 
 }
