@@ -19,25 +19,21 @@ namespace BC {
 		function __construct() {
 			#Actions
 			add_action( 'init', array( $this, 'initializer' ) );
-			add_action( 'init', 'BoostMisc::return_ad_edit_page' );
-			#@TODO: modify this hook
-			add_action( 'wp_loaded', 'BoostMisc::query_ads_owned_by_user' );
+			add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
 
+			add_action( 'init', 'BoostMisc::return_ad_edit_page' );
 			add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_boost_settings' );
 			add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_order_by_settings' );
-
 			#Hooks
 			register_activation_hook( __FILE__, array( $this, 'activation' ) );
 			#Filters
-			add_filter( 'the_content', 'BoostEditAd::remove_edit_ad_shortcode' , 6);
 
 			########TESTS########
-			#add_action( 'plugins_loaded','BoostEditAd::remove_edit_ad_shortcode' );
+			add_action( 'init', array( $this, 'tester' ) );
 			########TESTS########
 		}
 
-		public function tester( ) {
-		}
+		public function tester() {}
 
 		public function initializer() {
 			if ( ! defined( 'ABSPATH' ) && class_exists( 'AWPCP' ) ) {
@@ -48,16 +44,29 @@ namespace BC {
 				define( 'SD_BOOST_URL', plugin_dir_url( __FILE__ ) );
 				define( 'SD_BOOST_NAME', plugin_basename(  __FILE__ ) );
 				#Requires
-
-				require_once SD_BOOST_PATH . 'lib/classes/class.awpcpeditad.php';
 				require_once SD_BOOST_PATH . 'lib/classes/class.boost-settings-panel.php';
-				require_once SD_BOOST_PATH . 'lib/classes/class.awpcpui-process.php';
-
 				require_once SD_BOOST_PATH . 'lib/misc.php';
 
 				#Shortcodes
-				add_shortcode( 'BOOSTEDAWPCPCLASSIFIEDSUI', 'BoostProcess::boost_shortcode' );
-				add_shortcode( 'BOOSTEDAWPCPEDITAD', 'BoostEditAd::awpcpui_editformscreen' );
+
+			}
+		}
+
+		public function scripts_and_styles() {
+			if ( \BoostMisc::return_ad_edit_page() ) {
+				$arr =
+					array(
+						'boost_buttom_form_enabled'   => \BoostMisc::boost_button_form_enabled(),
+						'boost_buttom_form_disabled'  => \BoostMisc::boost_button_form_disabled(),
+						'boost_arr'                   => \BoostMisc::return_array_of_boostable_ads()
+					);
+
+				wp_register_script( 'edit-an-advert-script', SD_BOOST_URL . 'assets/js/edit-an-advert.js', 'jquery', NULL, true );
+				wp_localize_script( 'edit-an-advert-script', 'boost_object', $arr );
+				wp_enqueue_script( 'edit-an-advert-script' );
+
+				wp_register_style( 'edit-an-advert-style', SD_BOOST_URL . 'assets/css/edit-an-advert.css' );
+				wp_enqueue_style( 'edit-an-advert-style' );
 
 			}
 		}
@@ -70,8 +79,7 @@ namespace BC {
 			$wpdb->query("ALTER TABLE " . AWPCP_TABLE_ADS ." ADD ad_boost_time INT");
 		}
 
-		public function deactivation() {
-		}
+		public function deactivation() {}
 
 	}
 
