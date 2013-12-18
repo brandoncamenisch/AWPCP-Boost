@@ -46,9 +46,6 @@ namespace BC {
 				#Requires
 				require_once SD_BOOST_PATH . 'lib/classes/class.boost-settings-panel.php';
 				require_once SD_BOOST_PATH . 'lib/misc.php';
-
-				#Shortcodes
-
 			}
 		}
 

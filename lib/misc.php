@@ -4,8 +4,8 @@ class BoostMisc {
 	public function return_ad_edit_page() {
 		$url = "http" . ( ($_SERVER['SERVER_PORT'] == 443 ) ? "s://" : "://" ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		$editadpageid = awpcp_get_page_id_by_ref('edit-ad-page-name');
-		$url_editpage = get_permalink($editadpageid);
-		if ( $url_editpage === $url ){
+		$url_editpage = get_permalink( $editadpageid );
+		if ( $url_editpage === $url ) {
 			return true;
 		}
 	}
@@ -37,18 +37,18 @@ class BoostMisc {
 
 	public function current_boost_time() {
 		$opt          = get_option( 'awpcp-options' );
-		$boostedTime  = strtotime($opt['boosted_time']);
+		$boostedTime  = strtotime( $opt['boost_time'] );
 		return $boostedTime;
 	}
 
 	public function boost_button_form_enabled() {
 		#? disabled
-		return '<div class="boostbutton"></div>';
+		return '<div class="boostbutton">Enabled</div>';
 	}
 
 	public function boost_button_form_disabled() {
 		#? disabled
-		return '<div class="boostbutton disabled"></div>';
+		return '<div class="boostbutton disabled">Disabled</div>';
 	}
 
 	#Since the AWPCP is extremely unextendable we are updating the actual ad id so that the results are consistently boosted to the top if this causes issues which it very well may then a better solution must be sought out.
