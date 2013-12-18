@@ -24,6 +24,11 @@ namespace BC {
 			add_action( 'init', 'BoostMisc::return_ad_edit_page' );
 			add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_boost_settings' );
 			add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_order_by_settings' );
+			add_action( 'wp_ajax_nopriv_update_boosted_time_values', 'BoostMisc::update_boosted_time_values' );
+			add_action( 'wp_head', 'BoostMisc::update_boosted_time_values' );
+			#Kill AJAX
+			add_action( 'wp_ajax_kill_ajax', array($this, 'kill_ajax' ) );
+
 			#Hooks
 			register_activation_hook( __FILE__, array( $this, 'activation' ) );
 			#Filters
@@ -55,7 +60,9 @@ namespace BC {
 					array(
 						'boost_buttom_form_enabled'   => \BoostMisc::boost_button_form_enabled(),
 						'boost_buttom_form_disabled'  => \BoostMisc::boost_button_form_disabled(),
-						'boost_arr'                   => \BoostMisc::return_array_of_boostable_ads()
+						'boost_arr'                   => \BoostMisc::return_array_of_boostable_ads(),
+						'no_boost_arr'                => \BoostMisc::return_array_of_non_boostable_ads(),
+						'display_countdown'           => \BoostMisc::display_countdown(),
 					);
 
 				wp_register_script( 'edit-an-advert-script', SD_BOOST_URL . 'assets/js/edit-an-advert.js', 'jquery', NULL, true );
@@ -78,6 +85,9 @@ namespace BC {
 
 		public function deactivation() {}
 
-	}
+		public function kill_ajax() {
+			die;
+		}
 
+	}
 }

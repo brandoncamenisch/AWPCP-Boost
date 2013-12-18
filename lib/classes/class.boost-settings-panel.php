@@ -8,9 +8,8 @@ class BoostSettingsPanel {
 
 		$key = $api->add_section( 'general-settings', __( 'Boost Settings', 'AWPCP' ), 'seatdropper-boost', 10, array( $awpcp->settings, 'section' ) );
 
-		$api->add_setting( $key, 'boost_display_edit_an_advert_loop', __( 'Display in the "Edit an Advert" loop?', 'AWPCP' ), 'checkbox', 1, '' );
-
-		$api->add_setting( $key, 'boost_display_edit_an_advert_single', __( 'Display in the "Edit an Advert" single?', 'AWPCP' ), 'checkbox', 1, '' );
+		#$api->add_setting( $key, 'boost_display_edit_an_advert_loop', __( 'Display in the "Edit an Advert" loop?', 'AWPCP' ), 'checkbox', 1, '' );
+		#$api->add_setting( $key, 'boost_display_edit_an_advert_single', __( 'Display in the "Edit an Advert" single?', 'AWPCP' ), 'checkbox', 1, '' );
 
 		$api->add_setting( $key, 'boost_time', __( 'Boosted time', 'AWPCP' ), 'textfield', '+3 days', 'Example: <strong>+1 week 2 days 4 hours 2 seconds</strong> or <strong>+3 hours</strong>' );
 

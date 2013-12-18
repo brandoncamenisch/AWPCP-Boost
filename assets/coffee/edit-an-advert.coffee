@@ -1,7 +1,7 @@
 jQuery(document).ready ($) ->
 	"use strict"
 
-	console.log boost_object.boost_arr
+	console.log boost_object.no_boost_arr
 
 	$("[class^=displayaditem]").each ->
 		adQueryString = $(this).find("> div > a").attr('href')
@@ -20,5 +20,17 @@ jQuery(document).ready ($) ->
 		#If adaccesskey is in the object then append the form accordingly
 		if vars['adaccesskey'] of boost_object.boost_arr
 			$(this).append boost_object.boost_buttom_form_enabled
+			$(this).find("form fieldset input[name='boostedTime']").val(vars['adaccesskey'])
 		else
 			$(this).append boost_object.boost_buttom_form_disabled
+			if boost_object.display_countdown is "1"
+
+				$(this).find("form fieldset button").append(" " + boost_object.no_boost_arr[vars['adaccesskey']])
+
+
+	adKey = $("#adpostform").find("input[name=\"adkey\"]").attr('value')
+	if adKey of boost_object.boost_arr
+		$(boost_object.boost_buttom_form_enabled).insertBefore("#adpostform")
+		$("form.boostbutton").find("fieldset input[name='boostedTime']").val(adKey)
+	else
+		$(boost_object.boost_buttom_form_enabled).insertBefore("#adpostform")
