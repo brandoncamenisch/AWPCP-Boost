@@ -2,12 +2,14 @@
 class BoostMisc {
 
 	public function return_ad_edit_page() {
-		$url = "http" . ( ($_SERVER['SERVER_PORT'] == 443 ) ? "s://" : "://" ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		$url = preg_replace('/\?.*/', '', $url);
-		$editadpageid = awpcp_get_page_id_by_ref('edit-ad-page-name');
-		$url_editpage = get_permalink( $editadpageid );
-		if ( $url_editpage === $url ) {
-			return true;
+		if ( function_exists( 'awpcp_get_page_id_by_ref' ) ){
+			$url = "http" . ( ($_SERVER['SERVER_PORT'] == 443 ) ? "s://" : "://" ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			$url = preg_replace('/\?.*/', '', $url);
+			$editadpageid = awpcp_get_page_id_by_ref('edit-ad-page-name');
+			$url_editpage = get_permalink( $editadpageid );
+			if ( $url_editpage === $url ) {
+				return true;
+			}
 		}
 	}
 
@@ -101,7 +103,7 @@ class BoostMisc {
 			#Update the table accordingly
 			$wpdb->query(
 				"UPDATE {$wpdb->prefix}awpcp_ads
-				SET ad_boost_time='$boostTime', ad_id='$boostTime'
+				SET ad_boost_time='$boostTime'
 				WHERE ad_key='$query'
 				AND user_id='$id'"
 			);
