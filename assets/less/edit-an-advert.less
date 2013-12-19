@@ -1,22 +1,21 @@
-[class^="displayaditems"] {
-	position: relative;
-	.boostbutton {
+[class^="displayaditems"], #boostform{
+	&{
+		position: relative;
+	}
+	button.boostbutton {
 		position: absolute;
 		top: 0;
 		right: 0;
-		button{
-			margin: 0.5em!important;
-			cursor: pointer;
-
-			img{
-				max-height: 1em;
-				max-width: 1em;
-				float:left;
-				margin: 0!important;
-				padding: 0;
-			}
+		margin: 0.5em!important;
+		cursor: pointer;
+		img {
+			max-height: 1em;
+			max-width: 1em;
+			float:left;
+			margin: 0!important;
+			padding: 0;
 		}
-		&.disabled{
+		&.disabled {
 			opacity: 0.5;
 		}
 	}

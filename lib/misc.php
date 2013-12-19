@@ -30,7 +30,7 @@ class BoostMisc {
 		foreach ( $ads as $ad ) {
 			if ( $ad->ad_boost_time >= $time ) {
 				#Build and return the array accordingly
-				$arr[$ad->ad_key] = date('D-m', $ad->ad_boost_time);
+				$arr[$ad->ad_key] = date('D-d', $ad->ad_boost_time);
 			}
 		}
 		return $arr;
@@ -68,11 +68,11 @@ class BoostMisc {
 		$img  = ( $opt['boost_active_boost_btn_image'] ? '<img src="' . $opt['boost_active_boost_btn_image'] . '">' : '' );
 		$msg  = $opt['boost_active_boost_btn_message'];
 
-		$out  = "<form action=\"#\" class=\"boostbutton\" method=\"POST\" onSubmit=\"window.location.reload()\">
+		$out  = "<form action=\"#\" class=\"boostform\" method=\"POST\">
 							" . wp_nonce_field( -1 ,'boosted_nonce' ) . "
 							<fieldset>
 								<input type=\"hidden\" name=\"boostedTime\" value=\"\" />
-								<button type=\"submit\">$img $msg</button>
+								<button type=\"submit\" class=\"boostbutton\">$img $msg</button>
 							</fieldset>
 						</form>";
 		return $out;
@@ -82,9 +82,9 @@ class BoostMisc {
 		$opt  = get_option( 'awpcp-options' );
 		$img  = ( $opt['boost_inactive_boost_btn_image'] ? '<img src="' . $opt['boost_inactive_boost_btn_image'] . '">' : '' );
 		$msg  = $opt['boost_inactive_boost_btn_message'];
-		$out  = "<form action=\"#\" class=\"boostbutton disabled\" method=\"POST\">
-							<fieldset>
-								<button type=\"submit\" disabled>$img $msg</button>
+		$out  = "<form action=\"#\" class=\"boostform\" method=\"POST\">
+							<fieldset class=\"boostbutton\">
+								<button type=\"submit\" class=\"boostbutton disabled\" disabled>$img $msg</button>
 							</fieldset>
 						</form>";
 		return $out;
