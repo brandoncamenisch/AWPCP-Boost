@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: AWPCP Seatdropper Boost
+Plugin Name: An AWPCP Seatdropper Boost
 Plugin URI: http://www.brandoncamenisch.com
 Description: Adds a boost button to "Another Wordpress Classifieds Plugin (AWPCP)"
 Author: Brandon Camenisch
@@ -34,11 +34,14 @@ namespace BC {
 
 				########TESTS########
 				add_action( 'init', array( $this, 'tester' ) );
+#				add_action("activated_plugin", array($this,"tester"));
 				########TESTS########
 			}
 		}
 
-		public function tester() {}
+		public function tester() {
+			\Patchwork\replaceLater( '\get_group_orderby', 'GetGroupOrderBy::get_group_orderby' );
+		}
 
 		public function initializer() {
 			#define constants
@@ -47,8 +50,8 @@ namespace BC {
 			define( 'SD_BOOST_NAME', plugin_basename(  __FILE__ ) );
 			#Requires
 			require_once SD_BOOST_PATH . 'lib/classes/class.boost-settings-panel.php';
+			require_once SD_BOOST_PATH . 'lib/classes/class.get-group-order-by.php';
 			require_once SD_BOOST_PATH . 'lib/misc.php';
-
 		}
 
 		public function scripts_and_styles() {
