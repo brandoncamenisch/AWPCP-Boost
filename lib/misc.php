@@ -1,4 +1,5 @@
 <?php
+
 class BoostMisc {
 
 	public function return_ad_edit_page() {
@@ -30,7 +31,8 @@ class BoostMisc {
 		$arr = array();
 		#Compare boost time to current time
 		foreach ( $ads as $ad ) {
-			if ( $ad->ad_boost_time >= $time ) {
+			$adTime =  strtotime( $ad->ad_boost_time ) ;
+			if ( $adTime >= $time ) {
 				#Build and return the array accordingly
 				$arr[$ad->ad_key] = date('D-d', $ad->ad_boost_time);
 			}
@@ -44,7 +46,8 @@ class BoostMisc {
 		$arr = array();
 		#Compare boost time to current time
 		foreach ( $ads as $ad ) {
-			if ( $ad->ad_boost_time <= $time ) {
+			$adTime =  strtotime( $ad->ad_boost_time ) ;
+			if ( $adTime <= $time ) {
 				#Build and return the array accordingly
 				$arr[$ad->ad_key] = $ad->ad_boost_time;
 			}
@@ -54,7 +57,8 @@ class BoostMisc {
 
 	public function current_boost_time() {
 		$opt          = get_option( 'awpcp-options' );
-		$boostedTime  = strtotime( $opt['boost_time'] );
+		$boostedTime  = date('Y-m-d H:i:s', strtotime( $opt['boost_time'] ) );
+		#2013-12-27 15:35:29
 		return $boostedTime;
 	}
 
@@ -109,6 +113,22 @@ class BoostMisc {
 			);
 			wp_redirect( $perma );
 			exit;
+		}
+	}
+
+	public function update_ad_timestamp() {
+		if ( isset( $_REQUEST['ad_id'] ) ) {
+			global $wpdb;
+			$id           = get_current_user_id();
+			$boostTime    = self::current_boost_time();
+			$query        = $_REQUEST['ad_id'];
+			$perma        = get_permalink();
+			#Update the table accordingly
+			$wpdb->query(
+				"UPDATE {$wpdb->prefix}awpcp_ads
+				SET ad_boost_time='$boostTime'
+				WHERE ad_id='$query'"
+			);
 		}
 	}
 

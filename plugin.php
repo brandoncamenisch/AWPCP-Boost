@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: An AWPCP Seatdropper Boost
+Plugin Name: AWPCP Seatdropper Boost
 Plugin URI: http://www.brandoncamenisch.com
 Description: Adds a boost button to "Another Wordpress Classifieds Plugin (AWPCP)"
 Author: Brandon Camenisch
@@ -9,8 +9,10 @@ Version: 1.0.0
 Text Domain: sd-boost
 License: GPLv3
 */
-
-namespace BC {
+	#define constants
+	define( 'SD_BOOST_PATH', plugin_dir_path( __FILE__ ) );
+	define( 'SD_BOOST_URL', plugin_dir_url( __FILE__ ) );
+	define( 'SD_BOOST_NAME', plugin_basename(  __FILE__ ) );
 
 	new Boost;
 
@@ -22,7 +24,9 @@ namespace BC {
 			} else {
 				#Actions
 				add_action( 'init', array( $this, 'initializer' ) );
+				add_action( 'init', array( $this, 'patchwork' ) );
 				add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
+				add_action( 'activated_plugin', array( $this, 'boost_plugin_first' ) );
 
 				add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_boost_settings' );
 				add_action( 'awpcp_register_settings', 'BoostSettingsPanel::register_order_by_settings' );
@@ -33,26 +37,30 @@ namespace BC {
 				#Filters
 
 				########TESTS########
-				add_action( 'init', array( $this, 'tester' ) );
-#				add_action("activated_plugin", array($this,"tester"));
+				add_action( 'wp_head', 'BoostMisc::update_ad_timestamp' );
 				########TESTS########
 			}
 		}
 
-		public function tester() {
-			\Patchwork\replaceLater( '\get_group_orderby', 'GetGroupOrderBy::get_group_orderby' );
+
+		public function boost_plugin_first() {
+			$path = str_replace( WP_PLUGIN_DIR . '/', '', __FILE__ );
+			if ( $plugins = get_option( 'active_plugins' ) ) {
+				if ( $key = array_search( $path, $plugins ) ) {
+					array_splice( $plugins, $key, 1 );
+					array_unshift( $plugins, $path );
+					update_option( 'active_plugins', $plugins );
+				}
+			}
 		}
 
+
 		public function initializer() {
-			#define constants
-			define( 'SD_BOOST_PATH', plugin_dir_path( __FILE__ ) );
-			define( 'SD_BOOST_URL', plugin_dir_url( __FILE__ ) );
-			define( 'SD_BOOST_NAME', plugin_basename(  __FILE__ ) );
 			#Requires
 			require_once SD_BOOST_PATH . 'lib/classes/class.boost-settings-panel.php';
-			require_once SD_BOOST_PATH . 'lib/classes/class.get-group-order-by.php';
 			require_once SD_BOOST_PATH . 'lib/misc.php';
 		}
+
 
 		public function scripts_and_styles() {
 			if ( \BoostMisc::return_ad_edit_page() ) {
@@ -75,15 +83,33 @@ namespace BC {
 			}
 		}
 
+
 		#On activation we want to create a table on the AWPCP _awpcp_ads table this table will keep track of the time the ad was last boosted.
 		public function activation() {
 			global $wpdb;
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			#add a column if it doesn't exist
-			$wpdb->query("ALTER TABLE " . AWPCP_TABLE_ADS ." ADD ad_boost_time INT");
+			$wpdb->query("ALTER TABLE " . AWPCP_TABLE_ADS ." ADD ad_boost_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
+			$this->override_group_order_by( WP_PLUGIN_DIR . '/another-wordpress-classifieds-plugin/functions_awpcp.php', true );
 		}
 
-		public function deactivation() {}
+
+		public function deactivation() {
+			$this->override_group_order_by( WP_PLUGIN_DIR . '/another-wordpress-classifieds-plugin/functions_awpcp.php.temp', false );
+		}
+
+
+		private function override_group_order_by( $file, $activation ) {
+			#if files exsists then copy it's contents
+			if ( file_exists( $file ) ) {
+				$contents = file_get_contents( $file );
+				if ( $activation ) {
+					$contents = str_replace( 'ad_id DESC', 'ad_boost_time DESC, ad_id DESC', $contents );
+				}
+				copy ( $file , "$file.temp" );
+				file_put_contents( $file, $contents );
+			}
+		}
+
 
 	}
-}
