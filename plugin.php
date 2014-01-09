@@ -34,6 +34,7 @@ License: GPLv3
 
 				#Hooks
 				register_activation_hook( __FILE__, array( $this, 'activation' ) );
+				register_deactivation_hook( __FILE__, array( $this, 'deactivation' )  );
 				#Filters
 
 				########TESTS########
@@ -95,19 +96,22 @@ License: GPLv3
 
 
 		public function deactivation() {
-			$this->override_group_order_by( WP_PLUGIN_DIR . '/another-wordpress-classifieds-plugin/functions_awpcp.php.temp', false );
+			$this->override_group_order_by( WP_PLUGIN_DIR . '/another-wordpress-classifieds-plugin/functions_awpcp.php', false );
 		}
 
-
+		#I really hate to do this!!!
 		private function override_group_order_by( $file, $activation ) {
 			#if files exsists then copy it's contents
 			if ( file_exists( $file ) ) {
-				$contents = file_get_contents( $file );
 				if ( $activation ) {
+					$contents = file_get_contents( $file );
 					$contents = str_replace( 'ad_id DESC', 'ad_boost_time DESC, ad_id DESC', $contents );
+					copy ( $file , "$file.temp" );
+					file_put_contents( $file, $contents );
+				} else {
+					$contents = file_get_contents( "$file.temp" );
+					file_put_contents( $file, $contents );
 				}
-				copy ( $file , "$file.temp" );
-				file_put_contents( $file, $contents );
 			}
 		}
 
